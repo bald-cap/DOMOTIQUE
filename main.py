@@ -6,7 +6,7 @@ root.title("DomotiQue")
 root.config(bg="#111E26")
 
 
-rooms_frame = Frame(root, width=100, height=50, bg="#0D151C")
+rooms_frame = Frame(root, width=100, height=50, bg="#111E26")
 rooms_frame.grid(row=0, column=1)
 
 def return_rooms():
@@ -35,7 +35,7 @@ def hover_state_opt(event):
 
 def leave_state_opt(event):
     menu_opt.intemconfig()
-menu_opt = Listbox(rooms_frame, selectmode=SINGLE, bg="#0D151C", fg="#D3D6DB", font=("Segoe UI", 12, 'bold'), justify='center')
+menu_opt = Listbox(rooms_frame, selectmode=SINGLE, bg="#0D151C", fg="#D3D6DB", font=("Segoe UI", 12, 'bold'), justify='center', highlightthickness=0)
 menu_opt.bind('<Motion>', hover_state_opt)
 menu_opt.grid(row=0, column=1)
 
