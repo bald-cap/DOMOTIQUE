@@ -6,7 +6,7 @@ root.title("DomotiQue")
 root.config(bg="#111E26")
 
 
-rooms_frame = Frame(root, width=100, height=50, bg="#273139")
+rooms_frame = Frame(root, width=100, height=50, bg="#0D151C")
 rooms_frame.grid(row=0, column=1)
 
 def return_rooms():
@@ -47,7 +47,6 @@ menu_opt.insert(END, 'Bedroom')
 menu_opt.insert(END, '')
 menu_opt.insert(END, 'Toilet')
 menu_opt.insert(END, '')
-# menu_holder.pack()
 
 
 doms_frame = Frame(root, width=50, height=50)
