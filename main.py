@@ -160,8 +160,8 @@ rad_state_intro.grid(row=0, column=0)
 ## Radiator State Value
 rad_state = StringVar()
 rad_state.set("ON")
-rad_state = Label(rad_state_frame, textvariable=rad_state, font=('Segoe UI sans serif', 14, 'bold'), bg='#00C59F', fg='#364B44')
-rad_state.grid(row=0, column=1, padx=5, pady=5)
+rad_state_lab = Label(rad_state_frame, textvariable=rad_state, font=('Segoe UI sans serif', 14, 'bold'), bg='#00C59F', fg='#364B44')
+rad_state_lab.grid(row=0, column=1, padx=5, pady=5)
 
 ## Radiator Switch Button
 rad_switch = StringVar()
@@ -171,7 +171,7 @@ def rad_switch_enter(event):
 def rad_switch_leave(event):
     rad_switch_btn.config(bg='white')
 
-rad_switch_btn = Button(rad_state_frame, textvariable= rad_switch, width=10, height=1, font=('Segoe UI sans serif', 15, 'bold'), command=lambda:switch_act(), activebackground='#B1BDC5')
+rad_switch_btn = Button(rad_state_frame, textvariable= rad_switch, width=10, height=1, font=('Segoe UI sans serif', 15, 'bold'), command=lambda:rad_switch_act(), activebackground='#B1BDC5')
 rad_switch_btn.bind('<Enter>', rad_switch_enter)
 rad_switch_btn.bind('<Leave>', rad_switch_leave)
 rad_switch_btn.grid(row=1, column=0, sticky='ew', columnspan=2)
@@ -180,11 +180,12 @@ rad_switch_btn.grid(row=1, column=0, sticky='ew', columnspan=2)
 def rad_switch_act():
     if rad_switch.get() == 'OFF' and rad_state.get() == 'ON':
         rad_switch.set('ON')
-        rad_state.config(bg='#C41200', fg='#FFE6D8')
+        rad_state_lab.config(bg='#C41200', fg='#FFE6D8')
         rad_state.set('OFF')
     elif rad_switch.get() == 'ON' and rad_state.get() == 'OFF':
         rad_switch.set('OFF')
-        rad_state.config(bg='#00C59F', fg='#364B44')
+        rad_state_lab.config(bg='#00C59F', fg='#364B44')
+        rad_state.set('ON')
 
 # Lights Frame Section
 ## Lights Wrapper/ Frame
