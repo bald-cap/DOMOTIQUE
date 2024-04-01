@@ -132,19 +132,26 @@ lights_state_frame = Frame(lights_frame, bg='#111E26', borderwidth=1)
 lights_state_frame.grid(row=0, column=0, pady=15)
 
 ## Lights State Label
-lights_state_intro = Label(lights_state_frame, text='STATE :', font=('Segoe UI sans serif', 15, 'bold'), bg='#111E26', fg='#D3D6DB')
+lights_state_intro = Label(lights_state_frame, text='STATE :', font=('Segoe UI sans serif', 14, 'bold'), bg='#111E26', fg='#D3D6DB')
 lights_state_intro.grid(row=0, column=0)
 
 ## Lights State Value
 state = StringVar()
 state.set("ON")
-lights_state = Label(lights_state_frame, textvariable=state, font=('Segoe UI sans serif', 15, 'bold'), bg='#00C59F', fg='#364B44')
+lights_state = Label(lights_state_frame, textvariable=state, font=('Segoe UI sans serif', 14, 'bold'), bg='#00C59F', fg='#364B44')
 lights_state.grid(row=0, column=1, padx=5, pady=5)
 
 ## Light Switch Button
 switch = StringVar()
 switch.set('OFF')
-light_switch_btn = Button(lights_state_frame, textvariable= switch, width=10, height=1, font=('Segoe UI sans serif', 15, 'bold'), command=lambda:switch_act())
+def light_switch_enter(event):
+    light_switch_btn.config(bg='#B1BDC5')
+def light_switch_leave(event):
+    light_switch_btn.config(bg='white')
+
+light_switch_btn = Button(lights_state_frame, textvariable= switch, width=10, height=1, font=('Segoe UI sans serif', 15, 'bold'), command=lambda:switch_act(), activebackground='#B1BDC5')
+light_switch_btn.bind('<Enter>', light_switch_enter)
+light_switch_btn.bind('<Leave>', light_switch_leave)
 light_switch_btn.grid(row=1, column=0, sticky='ew', columnspan=2)
 
 ### Function for Light Switch Action
@@ -167,16 +174,16 @@ intens_frame = Frame(lights_frame, background='#2F4858')
 intens_frame.grid(row=2, column=0)
 
 ## Lights Intensity Label Frame
-lights_intens_label_frame = Frame(intens_frame, bg='#48575E')
+lights_intens_label_frame = Frame(intens_frame, bg='#111E26')
 lights_intens_label_frame.grid(row=0, column=1, pady=15)
 
 ## Lights Intensity Label
-lights_intens_intro = Label(lights_intens_label_frame, text='INTENSITY :', font=('Segoe UI sans serif', 15, 'bold'), bg='#D2D8D9')
-lights_intens_intro.grid(row=0, column=0)
+lights_intens_intro = Label(lights_intens_label_frame, text='BRIGHTNESS :', font=('Segoe UI sans serif', 14, 'bold'), bg='#111E26', fg='#D3D6DB')
+lights_intens_intro.grid(row=0, column=0, padx=(10, 2), pady=7)
 
 
-lights_intens = Label(lights_intens_label_frame, textvariable=intens, font=('Segoe UI sans serif', 15, 'bold'), bg='#D2D8D9')
-lights_intens.grid(row=0, column=1)
+lights_intens = Label(lights_intens_label_frame, textvariable=intens, font=('Segoe UI sans serif', 13, 'bold'), bg='#D2D8D9')
+lights_intens.grid(row=0, column=1, padx=(2,10), ipady=1)
 
 ### Checking if Intensity buttons have been clicked
 min_clicked = mid_clicked = high_clicked = False
