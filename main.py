@@ -31,6 +31,12 @@ def select_state_rooms_opt(event):
 
     if opt.strip() != '':
         rooms_opt.itemconfig(pos_opt, selectbackground="#033F4D")
+        if not objs_frame.winfo_viewable():
+            objs_frame.grid(row=0, column=1)
+
+            columns, rows = root.grid_size()
+            for i in range(columns):
+                root.grid_columnconfigure(i, weight=1)
     else:
         rooms_opt.itemconfig(pos_opt, selectbackground='#0D151C')
     
@@ -67,7 +73,6 @@ rooms_opt.insert(END, '')
 # Objects Frame Section
 ## Objects Frame
 objs_frame = Frame(root, width=50, height=50)
-objs_frame.grid(row=0, column=1)
 
 ### Hover State Function for Objects Options
 def hover_state_objs_opt(event):
@@ -89,6 +94,23 @@ def select_state_objs_opt(event):
 
     if opt.strip() != '':
         objs_opt.itemconfig(pos_opt, selectbackground='#033F4D')
+        if opt.strip() == 'Lights':
+            if rad_frame.winfo_viewable:
+                rad_frame.grid_remove()
+            lights_frame.grid(row=0, column=2)
+
+            columns, rows = root.grid_size()
+            for i in range(columns):
+                root.grid_columnconfigure(i, weight=1)
+
+        elif opt.strip() == 'Radiator':
+            if lights_frame.winfo_viewable():
+                lights_frame.grid_remove()
+            rad_frame.grid(row=0, column=2)
+
+            columns, rows = root.grid_size()
+            for i in range(columns):
+                root.grid_columnconfigure(i, weight=1)
     else:
         objs_opt.itemconfig(pos_opt, selectbackground='#0D151C')
 
@@ -122,10 +144,51 @@ objs_opt.insert(END, '')
 objs_opt.insert(END, 'Lights')
 # objs_opt.insert(END, '')
 
+
+# Radiator Frame Scetion
+## Radiator Frame
+rad_frame = Frame(root, width=30, height=50, background='#2F4858')
+
+## Radiator State Frame
+rad_state_frame = Frame(rad_frame, bg='#111E26', borderwidth=1)
+rad_state_frame.grid(row=0, column=0, pady=15)
+
+## Radiator State Label
+rad_state_intro = Label(rad_state_frame, text='STATE :', font=('Segoe UI sans serif', 14, 'bold'), bg='#111E26', fg='#D3D6DB')
+rad_state_intro.grid(row=0, column=0)
+
+## Radiator State Value
+rad_state = StringVar()
+rad_state.set("ON")
+rad_state = Label(rad_state_frame, textvariable=rad_state, font=('Segoe UI sans serif', 14, 'bold'), bg='#00C59F', fg='#364B44')
+rad_state.grid(row=0, column=1, padx=5, pady=5)
+
+## Radiator Switch Button
+rad_switch = StringVar()
+rad_switch.set('OFF')
+def rad_switch_enter(event):
+    rad_switch_btn.config(bg='#B1BDC5')
+def rad_switch_leave(event):
+    rad_switch_btn.config(bg='white')
+
+rad_switch_btn = Button(rad_state_frame, textvariable= rad_switch, width=10, height=1, font=('Segoe UI sans serif', 15, 'bold'), command=lambda:switch_act(), activebackground='#B1BDC5')
+rad_switch_btn.bind('<Enter>', rad_switch_enter)
+rad_switch_btn.bind('<Leave>', rad_switch_leave)
+rad_switch_btn.grid(row=1, column=0, sticky='ew', columnspan=2)
+
+### Function for Radiator Switch Action
+def rad_switch_act():
+    if rad_switch.get() == 'OFF' and rad_state.get() == 'ON':
+        rad_switch.set('ON')
+        rad_state.config(bg='#C41200', fg='#FFE6D8')
+        rad_state.set('OFF')
+    elif rad_switch.get() == 'ON' and rad_state.get() == 'OFF':
+        rad_switch.set('OFF')
+        rad_state.config(bg='#00C59F', fg='#364B44')
+
 # Lights Frame Section
 ## Lights Wrapper/ Frame
 lights_frame = Frame(root, width=30, height=50, background='#2F4858')
-lights_frame.grid(row=0, column=2)
 
 ## Lights State Frame
 lights_state_frame = Frame(lights_frame, bg='#111E26', borderwidth=1)
@@ -192,7 +255,7 @@ min_clicked = mid_clicked = high_clicked = False
 def min_enter(event):
     global min_clicked
     if not min_clicked:
-        min_intens_btn.config(bg='#014853', fg='#D3D6DB')
+        min_intens_btn.config(bg='#1C4B63', fg='#D3D6DB')
 
 def min_leave(event):
     global min_clicked
@@ -218,7 +281,7 @@ def set_intens_low(intens):
 def mid_enter(event):
     global mid_clicked
     if not mid_clicked:
-        mid_intens_btn.config(bg='#014853', fg='#D3D6DB')
+        mid_intens_btn.config(bg='#1C4B63', fg='#D3D6DB')
 
 def mid_leave(event):
     global mid_clicked
@@ -248,7 +311,7 @@ mid_intens_btn.grid(row=2, column=1, padx=10)
 def high_enter(event):
     global high_clicked
     if not high_clicked:
-        high_intens_btn.config(bg='#014853', fg='#D3D6DB')
+        high_intens_btn.config(bg='#1C4B63', fg='#D3D6DB')
 
 def high_leave(event):
     global high_clicked
@@ -277,6 +340,6 @@ for i in range(columns_root):
     root.grid_columnconfigure(i, weight=1)
 
 for i in range(rows_root):
-    root.rowconfigure(i, weight=1)
+    root.grid_rowconfigure(i, weight=1)
 
 root.mainloop()
