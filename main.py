@@ -34,7 +34,7 @@ return_btn.bind('<Enter>', enter_state)
 return_btn.bind('<Leave>', leave_state)
 
 # Welcome Screen
-wel_lab = Label(root, text='WELCOME TO DOMOTIQUE. CLICK START TO BEGIN !', font=('Segoe UI sans serif', 13, 'bold'), bg='#1E2C35', fg='#D7F0EB')
+wel_lab = Label(root, text='WELCOME TO DOMOTIQUE.\n CLICK START TO BEGIN!', font=('Segoe UI sans serif', 13, 'bold'), bg='#1E2C35', fg='#D7F0EB', justify='center')
 wel_lab.grid(row=0, column=0)
 
 def start():
