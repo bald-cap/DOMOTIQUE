@@ -2,14 +2,65 @@ from tkinter import *
 
 # Main window
 root = Tk()
-root.geometry("750x500")
+root.geometry("850x500")
 root.title("DomotiQue")
 root.config(bg="#111E26")
+
+## Return Button
+def return_home():
+    if rooms_frame.winfo_viewable():
+        rooms_frame.grid_remove()
+    if objs_frame.winfo_viewable():
+        objs_frame.grid_remove()
+    if rad_frame.winfo_viewable():
+        rad_frame.grid_remove()
+    if lights_frame.winfo_viewable():
+        lights_frame.grid_remove()
+    
+    return_btn.grid_remove()
+    wel_lab.grid(row=0, column=0, columnspan=3)
+    wel_lab_btn.grid(row=1, column=0, columnspan=3)
+
+
+def enter_state(event):
+    return_btn.config(bg="#273339")
+
+def leave_state(event):
+    return_btn.config(bg='#39454B')
+
+return_btn = Button(root, width=25, height=0, text="RETURN TO HOMEPAGE", font=("Archivo Black", 10, 'bold'), command=lambda: return_home(), justify='center', bg="#39454B", fg='#E9EBEE')
+
+return_btn.bind('<Enter>', enter_state)
+return_btn.bind('<Leave>', leave_state)
+
+# Welcome Screen
+wel_lab = Label(root, text='WELCOME TO DOMOTIQUE. CLICK START TO BEGIN !', font=('Segoe UI sans serif', 13, 'bold'), bg='#1E2C35', fg='#D7F0EB')
+wel_lab.grid(row=0, column=0)
+
+def start():
+    wel_lab.grid_remove()
+    wel_lab_btn.grid_remove()
+    return_btn.grid(row=0, column=0, pady=10)
+    rooms_frame.grid(row=1, column=0)
+
+def wel_lab_enter_state(event):
+    wel_lab_btn.config(bg='#D0DEE7')
+
+def wel_lab_leave_state(event):
+    wel_lab_btn.config(bg='#ffffff')
+
+wel_lab_btn = Button(root, text='START', font=('Segoe UI sans serif', 13, 'bold'), fg='#1E2C35', bg='#ffffff', activebackground='#D0DEE7', activeforeground='#1E2C35', command=lambda: start())
+wel_lab_btn.bind('<Enter>', wel_lab_enter_state)
+wel_lab_btn.bind('<Leave>', wel_lab_leave_state)
+wel_lab_btn.grid(row=1, column=0)
 
 # Rooms Frame Section
 ## Room Wrapper / Frame
 rooms_frame = Frame(root, width=100, height=50, bg="#111E26")
-rooms_frame.grid(row=0, column=0)
+
+## Rooms Label
+rooms_lab = Label(rooms_frame, font=('Segoe UI sans serif', 13, 'bold'), text='ROOMS', bg='#303B4A', fg='#D7F0EB')
+rooms_lab.grid(row=0, column=0, pady=10)
 
 ### Hover State Function for Rooms Options
 def hover_state_rooms_opt(event):
@@ -32,7 +83,8 @@ def select_state_rooms_opt(event):
     if opt.strip() != '':
         rooms_opt.itemconfig(pos_opt, selectbackground="#033F4D")
         if not objs_frame.winfo_viewable():
-            objs_frame.grid(row=0, column=1)
+            return_btn.grid(row=0, column=0, columnspan=2)
+            objs_frame.grid(row=1, column=1)
 
             columns, rows = root.grid_size()
             for i in range(columns):
@@ -72,7 +124,11 @@ rooms_opt.insert(END, '')
 
 # Objects Frame Section
 ## Objects Frame
-objs_frame = Frame(root, width=50, height=50)
+objs_frame = Frame(root, width=50, height=50, bg='#111E26')
+
+## Objects Label
+objs_lab = Label(objs_frame, font=('Segoe UI sans serif', 13, 'bold'), text='OBJECTS', bg='#303B4A', fg='#D7F0EB')
+objs_lab.grid(row=0, column=0, pady=10)
 
 ### Hover State Function for Objects Options
 def hover_state_objs_opt(event):
@@ -97,7 +153,8 @@ def select_state_objs_opt(event):
         if opt.strip() == 'Lights':
             if rad_frame.winfo_viewable:
                 rad_frame.grid_remove()
-            lights_frame.grid(row=0, column=2)
+            return_btn.grid(row=0, column=0, columnspan=3)
+            lights_frame.grid(row=1, column=2)
 
             columns, rows = root.grid_size()
             for i in range(columns):
@@ -106,7 +163,8 @@ def select_state_objs_opt(event):
         elif opt.strip() == 'Radiator':
             if lights_frame.winfo_viewable():
                 lights_frame.grid_remove()
-            rad_frame.grid(row=0, column=2)
+            return_btn.grid(row=0, column=0, columnspan=3)
+            rad_frame.grid(row=1, column=2)
 
             columns, rows = root.grid_size()
             for i in range(columns):
@@ -133,7 +191,7 @@ objs_opt = Listbox(objs_frame, selectmode=SINGLE, highlightthickness=0, borderwi
 objs_opt.bind('<Motion>', hover_state_objs_opt)
 objs_opt.bind('<<ListboxSelect>>', select_state_objs_opt)
 objs_opt.bind('<Leave>', leave_state_objs_opt)
-objs_opt.grid(row=0, column=0)
+objs_opt.grid(row=1, column=0)
 
 ### Inserting Objects Options
 objs_opt.insert(END, '')
@@ -142,16 +200,19 @@ objs_opt.insert(END, '')
 objs_opt.insert(END, 'Radiator')
 objs_opt.insert(END, '')
 objs_opt.insert(END, 'Lights')
-# objs_opt.insert(END, '')
 
 
 # Radiator Frame Scetion
 ## Radiator Frame
-rad_frame = Frame(root, width=30, height=50, background='#2F4858')
+rad_frame = Frame(root, width=30, height=50, bg='#2F4858')
+
+## Radiator Label
+rad_lab = Label(rad_frame, font=('Segoe UI sans serif', 13, 'bold'), text='RADIATOR CONTROL', bg='#1E2C35', fg='#D7F0EB')
+rad_lab.grid(row=0, column=0, pady=10, padx=15)
 
 ## Radiator State Frame
 rad_state_frame = Frame(rad_frame, bg='#111E26', borderwidth=1)
-rad_state_frame.grid(row=0, column=0, pady=15)
+rad_state_frame.grid(row=1, column=0, pady=15)
 
 ## Radiator State Label
 rad_state_intro = Label(rad_state_frame, text='STATE :', font=('Segoe UI sans serif', 14, 'bold'), bg='#111E26', fg='#D3D6DB')
@@ -182,18 +243,80 @@ def rad_switch_act():
         rad_switch.set('ON')
         rad_state_lab.config(bg='#C41200', fg='#FFE6D8')
         rad_state.set('OFF')
+        rad_min_btn.grid_remove()
+        rad_plus_btn.grid_remove()
     elif rad_switch.get() == 'ON' and rad_state.get() == 'OFF':
         rad_switch.set('OFF')
         rad_state_lab.config(bg='#00C59F', fg='#364B44')
         rad_state.set('ON')
+        rad_min_btn.grid(row=1, column=0, padx=5, pady=(10,0))
+        rad_plus_btn.grid(row=1, column=2, padx=5, pady=(10,0))
+
+## Radiator Control Frame
+rad_ctrl_frame = Frame(rad_frame, width=30, height=50, borderwidth=0, highlightthickness=0, bg='#2F4858')
+rad_ctrl_frame.grid(row=2, column=0, pady=10, padx=20)
+
+
+## Temperature Label
+rad_temp_label = Label(rad_ctrl_frame, text='TEMPERATRUE ', font=('Segoe UI sans serif', 13, 'bold'), bg='#111E26', fg='#D3D6DB')
+rad_temp_label.grid(row=0, column=1)
+
+## Temp Varaiable
+temp = IntVar()
+temp.set('20')
+
+## Radiator Temperature
+rad_temp_label = Label(rad_ctrl_frame, font=('Segoe UI sans serif', 19, 'bold'), width=6, height=2, textvariable=temp, justify='center')
+rad_temp_label.grid(row=1, column=1, rowspan=2, padx=10, pady=13)
+
+
+## Decrease Temperature Button
+def rad_min_enter_state(event):
+    rad_min_btn.config(bg='#B6C0C4')
+
+def rad_min_leave_state(event):
+    rad_min_btn.config(bg='#F1FBFF')
+
+def decr_temp(temp):
+    temp_act = temp.get()
+    if temp_act > 18:
+        temp.set(temp_act - 1)
+
+rad_min_btn = Button(rad_ctrl_frame, width=2, height=1, font=('Archivo Black', 15, 'bold'), text='-', bg='#F1FBFF', fg='#2A3235', activebackground='#B6C0C4', command=lambda: decr_temp(temp))
+rad_min_btn.grid(row=1, column=0, padx=5, pady=(10,0))
+rad_min_btn.bind('<Enter>', rad_min_enter_state)
+rad_min_btn.bind('<Leave>', rad_min_leave_state)
+
+
+## Increase Temperature Button
+def rad_plus_enter_state(event):
+    rad_plus_btn.config(bg='#B6C0C4')
+
+def rad_plus_leave_state(event):
+    rad_plus_btn.config(bg='#F1FBFF')
+
+def incr_temp(temp):
+    temp_act = temp.get()
+    if temp_act < 40:
+        temp.set(temp_act + 1)
+
+rad_plus_btn = Button(rad_ctrl_frame, width=2, height=0, font=('Archivo Black', 15, 'bold'), text='+', bg='#F1FBFF', fg='#2A3235', activebackground='#B6C0C4', command=lambda: incr_temp(temp))
+rad_plus_btn.grid(row=1, column=2, padx=5, pady=(10,0))
+rad_plus_btn.bind('<Enter>', rad_plus_enter_state)
+rad_plus_btn.bind('<Leave>', rad_plus_leave_state)
+
 
 # Lights Frame Section
 ## Lights Wrapper/ Frame
-lights_frame = Frame(root, width=30, height=50, background='#2F4858')
+lights_frame = Frame(root, width=30, height=50, bg='#2F4858')
+
+## Lights Label
+lights_lab = Label(lights_frame, font=('Segoe UI sans serif', 13, 'bold'), text='LIGHTS CONTROL', bg='#1E2C35', fg='#D7F0EB')
+lights_lab.grid(row=0, column=0, pady=10)
 
 ## Lights State Frame
 lights_state_frame = Frame(lights_frame, bg='#111E26', borderwidth=1)
-lights_state_frame.grid(row=0, column=0, pady=15)
+lights_state_frame.grid(row=1, column=0, pady=15)
 
 ## Lights State Label
 lights_state_intro = Label(lights_state_frame, text='STATE :', font=('Segoe UI sans serif', 14, 'bold'), bg='#111E26', fg='#D3D6DB')
@@ -224,24 +347,30 @@ def switch_act():
         switch.set('ON')
         lights_state.config(bg='#C41200', fg='#FFE6D8')
         state.set('OFF')
+        min_intens_btn.grid_remove()
+        mid_intens_btn.grid_remove()
+        high_intens_btn.grid_remove()
     elif switch.get() == 'ON' and state.get() == 'OFF':
         switch.set('OFF')
         lights_state.config(bg='#00C59F', fg='#364B44')
         state.set('ON')
+        min_intens_btn.grid(row=2, column=0, padx=10)
+        mid_intens_btn.grid(row=2, column=1, padx=10)
+        high_intens_btn.grid(row=2, column=2, padx=10, pady=15)
 
-## Lights Intensity Value
+## Lights Brightness Value
 intens = StringVar()
 intens.set('LOW')
 
-## Lights Intensity Frame
-intens_frame = Frame(lights_frame, background='#2F4858')
+## Lights Brightness Frame
+intens_frame = Frame(lights_frame, bg='#2F4858')
 intens_frame.grid(row=2, column=0)
 
-## Lights Intensity Label Frame
+## Lights Brightness Label Frame
 lights_intens_label_frame = Frame(intens_frame, bg='#111E26')
-lights_intens_label_frame.grid(row=0, column=1, pady=15)
+lights_intens_label_frame.grid(row=0, column=1, pady=15, padx=15)
 
-## Lights Intensity Label
+## Lights Brightness Label
 lights_intens_intro = Label(lights_intens_label_frame, text='BRIGHTNESS :', font=('Segoe UI sans serif', 14, 'bold'), bg='#111E26', fg='#D3D6DB')
 lights_intens_intro.grid(row=0, column=0, padx=(10, 2), pady=7)
 
@@ -249,10 +378,10 @@ lights_intens_intro.grid(row=0, column=0, padx=(10, 2), pady=7)
 lights_intens = Label(lights_intens_label_frame, textvariable=intens, font=('Segoe UI sans serif', 13, 'bold'), bg='#D2D8D9')
 lights_intens.grid(row=0, column=1, padx=(2,10), ipady=1)
 
-### Checking if Intensity buttons have been clicked
+### Checking if Brightness buttons have been clicked
 min_clicked = mid_clicked = high_clicked = False
 
-## Button for Minimum Intensity
+## Button for Minimum Brightness
 def min_enter(event):
     global min_clicked
     if not min_clicked:
@@ -267,7 +396,7 @@ min_intens_btn.bind('<Enter>', min_enter)
 min_intens_btn.bind('<Leave>', min_leave)
 min_intens_btn.grid(row=2, column=0, padx=10)
 
-### Function for Setting Intensity to Low
+### Function for Setting Brightness to Low
 def set_intens_low(intens):
     intens.set('LOW')
     global min_clicked, mid_clicked, high_clicked
@@ -278,7 +407,7 @@ def set_intens_low(intens):
     mid_intens_btn.config(bg='#111E26', fg='#D3D6DB')
     high_intens_btn.config(bg='#111E26', fg='#D3D6DB')
 
-## Button for Medium Intensity
+## Button for Medium Brightness
 def mid_enter(event):
     global mid_clicked
     if not mid_clicked:
@@ -289,6 +418,8 @@ def mid_leave(event):
     if not mid_clicked:
         mid_intens_btn.config(bg='#111E26', fg='#D3D6DB')
 
+
+### Function for Setting Brightness to Mid
 def set_intens_mid(intens):
     intens.set('MID')
     global min_clicked, mid_clicked, high_clicked
@@ -305,10 +436,7 @@ mid_intens_btn.bind('<Leave>', mid_leave)
 mid_intens_btn.grid(row=2, column=1, padx=10)
 
 
-### Function for Setting Intensity to Mid
-
-
-## Button for High Intensity
+## Button for High Brightness
 def high_enter(event):
     global high_clicked
     if not high_clicked:
@@ -319,7 +447,7 @@ def high_leave(event):
     if not high_clicked:
         high_intens_btn.config(bg='#111E26', fg='#D3D6DB')
 
-### Function for Setting Intensity to High
+### Function for Setting Brightness to High
 def set_intens_high(intens):
     intens.set('HIGH')
     global min_clicked, mid_clicked, high_clicked
