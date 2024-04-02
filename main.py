@@ -2,9 +2,43 @@ from tkinter import *
 
 # Main window
 root = Tk()
-root.geometry("850x500")
+root.geometry("980x530")
 root.title("DomotiQue")
 root.config(bg="#111E26")
+
+rooms_obj_dict = {
+    'Kitchen':{
+        'Radiator': {
+            'State' : 'OFF',
+            'Temperature' : 20 
+        },
+        'Lights' : {
+            'State' : 'OFF',
+            'Brightness' : 'LOW'
+        }
+    },
+    'Bedroom':{
+        'Radiator': {
+            'State' : 'OFF',
+            'Temperature' : 20 
+        },
+        'Lights' : {
+            'State' : 'OFF',
+            'Brightness' : 'LOW'
+        }
+    },
+    'Toilet':{
+        'Radiator': {
+            'State' : 'OFF',
+            'Temperature' : 20 
+        },
+        'Lights' : {
+            'State' : 'OFF',
+            'Brightness' : 'LOW'
+        }
+    }
+}
+
 
 ## Return Button
 def return_home():
@@ -155,6 +189,7 @@ def select_state_objs_opt(event):
                 rad_frame.grid_remove()
             return_btn.grid(row=0, column=0, columnspan=3)
             lights_frame.grid(row=1, column=2)
+            upd_frame.grid(row=2, column=1, pady=(0, 15))
 
             columns, rows = root.grid_size()
             for i in range(columns):
@@ -165,6 +200,7 @@ def select_state_objs_opt(event):
                 lights_frame.grid_remove()
             return_btn.grid(row=0, column=0, columnspan=3)
             rad_frame.grid(row=1, column=2)
+            upd_frame.grid(row=2, column=1, pady=(0, 15))
 
             columns, rows = root.grid_size()
             for i in range(columns):
@@ -239,6 +275,14 @@ rad_switch_btn.grid(row=1, column=0, sticky='ew', columnspan=2)
 
 ### Function for Radiator Switch Action
 def rad_switch_act():
+    pos_objs_opt_tup = objs_opt.curselection()
+    pos_opt = pos_objs_opt_tup[0]
+    opt_obj = objs_opt.get(pos_opt)
+
+    pos_rooms_opt_tup = rooms_opt.curselection()
+    pos_opt = pos_rooms_opt_tup[0]
+    opt_room = rooms_opt.get(pos_opt)
+
     if rad_switch.get() == 'OFF' and rad_state.get() == 'ON':
         rad_switch.set('ON')
         rad_state_lab.config(bg='#C41200', fg='#FFE6D8')
@@ -251,6 +295,12 @@ def rad_switch_act():
         rad_state.set('ON')
         rad_min_btn.grid(row=1, column=0, padx=5, pady=(10,0))
         rad_plus_btn.grid(row=1, column=2, padx=5, pady=(10,0))
+
+    if mes_lab.get(0) == 'NO UPDATES MADE!':
+        mes_lab.delete(0)
+        mes_lab.insert(END, '- ' + opt_room + ' ' + opt_obj + ' : ' + rad_state.get())
+    else:
+        mes_lab.insert(END, '- ' + opt_room + ' ' + opt_obj + ' : ' + rad_state.get())
 
 ## Radiator Control Frame
 rad_ctrl_frame = Frame(rad_frame, width=30, height=50, borderwidth=0, highlightthickness=0, bg='#2F4858')
@@ -278,9 +328,23 @@ def rad_min_leave_state(event):
     rad_min_btn.config(bg='#F1FBFF')
 
 def decr_temp(temp):
+    pos_objs_opt_tup = objs_opt.curselection()
+    pos_opt = pos_objs_opt_tup[0]
+    opt_obj = objs_opt.get(pos_opt)
+
+    pos_rooms_opt_tup = rooms_opt.curselection()
+    pos_opt = pos_rooms_opt_tup[0]
+    opt_room = rooms_opt.get(pos_opt)
+
     temp_act = temp.get()
     if temp_act > 18:
         temp.set(temp_act - 1)
+
+        if mes_lab.get(0) == 'NO UPDATES MADE!':
+            mes_lab.delete(0)
+            mes_lab.insert(END, '- ' + opt_room + ' ' + opt_obj + ' : ' + str(temp.get()) + '°')
+        else:
+            mes_lab.insert(END, '- ' + opt_room + ' ' + opt_obj + ' : ' + str(temp.get()) + '°')
 
 rad_min_btn = Button(rad_ctrl_frame, width=2, height=1, font=('Archivo Black', 15, 'bold'), text='-', bg='#F1FBFF', fg='#2A3235', activebackground='#B6C0C4', command=lambda: decr_temp(temp))
 rad_min_btn.grid(row=1, column=0, padx=5, pady=(10,0))
@@ -296,9 +360,23 @@ def rad_plus_leave_state(event):
     rad_plus_btn.config(bg='#F1FBFF')
 
 def incr_temp(temp):
+    pos_objs_opt_tup = objs_opt.curselection()
+    pos_opt = pos_objs_opt_tup[0]
+    opt_obj = objs_opt.get(pos_opt)
+
+    pos_rooms_opt_tup = rooms_opt.curselection()
+    pos_opt = pos_rooms_opt_tup[0]
+    opt_room = rooms_opt.get(pos_opt)
+
     temp_act = temp.get()
     if temp_act < 40:
         temp.set(temp_act + 1)
+        if mes_lab.get(0) == 'NO UPDATES MADE!':
+            mes_lab.delete(0)
+            mes_lab.insert(END, '- ' + opt_room + ' ' + opt_obj + ' : ' + str(temp.get()) + '°')
+        else:
+            mes_lab.insert(END, '- ' + opt_room + ' ' + opt_obj + ' : ' + str(temp.get()) + '°')
+        
 
 rad_plus_btn = Button(rad_ctrl_frame, width=2, height=0, font=('Archivo Black', 15, 'bold'), text='+', bg='#F1FBFF', fg='#2A3235', activebackground='#B6C0C4', command=lambda: incr_temp(temp))
 rad_plus_btn.grid(row=1, column=2, padx=5, pady=(10,0))
@@ -343,6 +421,14 @@ light_switch_btn.grid(row=1, column=0, sticky='ew', columnspan=2)
 
 ### Function for Light Switch Action
 def switch_act():
+    pos_objs_opt_tup = objs_opt.curselection()
+    pos_opt = pos_objs_opt_tup[0]
+    opt_obj = objs_opt.get(pos_opt)
+
+    pos_rooms_opt_tup = rooms_opt.curselection()
+    pos_opt = pos_rooms_opt_tup[0]
+    opt_room = rooms_opt.get(pos_opt)
+
     if switch.get() == 'OFF' and state.get() == 'ON':
         switch.set('ON')
         lights_state.config(bg='#C41200', fg='#FFE6D8')
@@ -350,6 +436,8 @@ def switch_act():
         min_intens_btn.grid_remove()
         mid_intens_btn.grid_remove()
         high_intens_btn.grid_remove()
+
+
     elif switch.get() == 'ON' and state.get() == 'OFF':
         switch.set('OFF')
         lights_state.config(bg='#00C59F', fg='#364B44')
@@ -357,6 +445,12 @@ def switch_act():
         min_intens_btn.grid(row=2, column=0, padx=10)
         mid_intens_btn.grid(row=2, column=1, padx=10)
         high_intens_btn.grid(row=2, column=2, padx=10, pady=15)
+
+    if mes_lab.get(0) == 'NO UPDATES MADE!':
+        mes_lab.delete(0)
+        mes_lab.insert(END, '- ' + opt_room + ' ' + opt_obj + ' : ' + state.get())
+    else:
+        mes_lab.insert(END, '- ' + opt_room + ' ' + opt_obj + ' : ' + state.get())
 
 ## Lights Brightness Value
 intens = StringVar()
@@ -398,6 +492,14 @@ min_intens_btn.grid(row=2, column=0, padx=10)
 
 ### Function for Setting Brightness to Low
 def set_intens_low(intens):
+    pos_objs_opt_tup = objs_opt.curselection()
+    pos_opt = pos_objs_opt_tup[0]
+    opt_obj = objs_opt.get(pos_opt)
+
+    pos_rooms_opt_tup = rooms_opt.curselection()
+    pos_opt = pos_rooms_opt_tup[0]
+    opt_room = rooms_opt.get(pos_opt)
+
     intens.set('LOW')
     global min_clicked, mid_clicked, high_clicked
     min_clicked = True
@@ -406,6 +508,12 @@ def set_intens_low(intens):
     min_intens_btn.config(bg='#B6A999', fg='#4F4537')
     mid_intens_btn.config(bg='#111E26', fg='#D3D6DB')
     high_intens_btn.config(bg='#111E26', fg='#D3D6DB')
+
+    if mes_lab.get(0) == 'NO UPDATES MADE!':
+        mes_lab.delete(0)
+        mes_lab.insert(END, '- ' + opt_room + ' ' + opt_obj + ', ' + 'BRIGHTNESS : LOW')
+    else:
+        mes_lab.insert(END, '- ' + opt_room + ' ' + opt_obj + ', ' + 'BRIGHTNESS : LOW')
 
 ## Button for Medium Brightness
 def mid_enter(event):
@@ -421,6 +529,14 @@ def mid_leave(event):
 
 ### Function for Setting Brightness to Mid
 def set_intens_mid(intens):
+    pos_objs_opt_tup = objs_opt.curselection()
+    pos_opt = pos_objs_opt_tup[0]
+    opt_obj = objs_opt.get(pos_opt)
+
+    pos_rooms_opt_tup = rooms_opt.curselection()
+    pos_opt = pos_rooms_opt_tup[0]
+    opt_room = rooms_opt.get(pos_opt)
+
     intens.set('MID')
     global min_clicked, mid_clicked, high_clicked
     min_clicked = False
@@ -429,6 +545,12 @@ def set_intens_mid(intens):
     mid_intens_btn.config(bg='#B6A999', fg='#4F4537')
     min_intens_btn.config(bg='#111E26', fg='#D3D6DB')
     high_intens_btn.config(bg='#111E26', fg='#D3D6DB')
+
+    if mes_lab.get(0) == 'NO UPDATES MADE!':
+        mes_lab.delete(0)
+        mes_lab.insert(END, '- ' + opt_room + ' ' + opt_obj + ', ' + 'BRIGHTNESS : MID')
+    else:
+        mes_lab.insert(END, '- ' + opt_room + ' ' + opt_obj + ', ' + 'BRIGHTNESS : MID')
 
 mid_intens_btn = Button(intens_frame, text='MID', bg='#111E26', fg='#D3D6DB', font=('Segoe UI sans serif', 13, 'bold'), activeforeground='#D3D6DB', activebackground='#014853', command=lambda: set_intens_mid(intens))
 mid_intens_btn.bind('<Enter>', mid_enter)
@@ -449,6 +571,14 @@ def high_leave(event):
 
 ### Function for Setting Brightness to High
 def set_intens_high(intens):
+    pos_objs_opt_tup = objs_opt.curselection()
+    pos_opt = pos_objs_opt_tup[0]
+    opt_obj = objs_opt.get(pos_opt)
+
+    pos_rooms_opt_tup = rooms_opt.curselection()
+    pos_opt = pos_rooms_opt_tup[0]
+    opt_room = rooms_opt.get(pos_opt)
+
     intens.set('HIGH')
     global min_clicked, mid_clicked, high_clicked
     min_clicked = False
@@ -458,10 +588,40 @@ def set_intens_high(intens):
     min_intens_btn.config(bg='#111E26', fg='#D3D6DB')
     mid_intens_btn.config(bg='#111E26', fg='#D3D6DB')
 
+    if mes_lab.get(0) == 'NO UPDATES MADE!':
+        mes_lab.delete(0)
+        mes_lab.insert(END, '- ' + opt_room + ' ' + opt_obj + ', ' + 'BRIGHTNESS : HIGH')
+    else:
+        mes_lab.insert(END, '- ' + opt_room + ' ' + opt_obj + ', ' + 'BRIGHTNESS : HIGH')
+
 high_intens_btn = Button(intens_frame, text='HIGH', bg='#111E26', fg='#D3D6DB', font=('Segoe UI sans serif', 13, 'bold'), activeforeground='#D3D6DB', activebackground='#014853', command=lambda: set_intens_high(intens))
 high_intens_btn.grid(row=2, column=2, padx=10, pady=15)
 high_intens_btn.bind('<Enter>', high_enter)
 high_intens_btn.bind('<Leave>', high_leave)
+
+upd_frame = Frame(root, width=30, height=50, borderwidth=0, highlightthickness=0, bg='#111E26')
+
+upd_lab = Label(upd_frame, text='UPDATES', font=('Seoge UI sans serif', 13, 'bold'), bg='#303B4A', fg='#D7F0EB')
+upd_lab.grid(row=0, column=0, pady=15)
+
+
+def remove_select(event):
+    list_size = mes_lab.size()
+    pos_upd_sel_tup = mes_lab.curselection()
+
+    if pos_upd_sel_tup:
+        pos_up_sel = pos_upd_sel_tup[0]
+        mes_lab.itemconfig(pos_up_sel, {'bg': '#98A0A4', 'fg' : '#111E26'})
+
+mes_lab = Listbox(upd_frame, font=('Roboto Mono', 13, 'bold'), width=35, height=5, bg="#98A0A4", fg='#111E26', selectbackground='#98A0A4', selectforeground='#111E26', justify='center')
+mes_lab.bind('<<Listboxselect>>', remove_select)
+mes_lab.grid(row=1, column=0)
+
+mes_lab.insert(END, 'NO UPDATES MADE!')
+
+mes_lab_scroll = Scrollbar(upd_frame, orient='vertical', command=lambda:mes_lab.yview)
+mes_lab_scroll.grid(row=1, column=1, sticky='ns')
+mes_lab.config(yscrollcommand=mes_lab_scroll.set)
 
 # Configuring grid weights
 columns_root, rows_root = root.grid_size()
