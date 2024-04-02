@@ -2,43 +2,44 @@ from tkinter import *
 
 # Main window
 root = Tk()
-root.geometry("980x530")
+root.geometry("980x600")
 root.title("DomotiQue")
 root.config(bg="#111E26")
 
 rooms_obj_dict = {
     'Kitchen':{
         'Radiator': {
-            'State' : 'OFF',
+            'State' : 'ON',
             'Temperature' : 20 
         },
         'Lights' : {
-            'State' : 'OFF',
+            'State' : 'ON',
             'Brightness' : 'LOW'
         }
     },
     'Bedroom':{
         'Radiator': {
-            'State' : 'OFF',
+            'State' : 'ON',
             'Temperature' : 20 
         },
         'Lights' : {
-            'State' : 'OFF',
+            'State' : 'ON',
             'Brightness' : 'LOW'
         }
     },
     'Toilet':{
         'Radiator': {
-            'State' : 'OFF',
+            'State' : 'ON',
             'Temperature' : 20 
         },
         'Lights' : {
-            'State' : 'OFF',
+            'State' : 'ON',
             'Brightness' : 'LOW'
         }
     }
 }
 
+global Line
 
 ## Return Button
 def return_home():
@@ -111,11 +112,11 @@ def hover_state_rooms_opt(event):
 ### Select State Function for Rooms Options
 def select_state_rooms_opt(event):
     pos_rooms_opt_tup = rooms_opt.curselection()
-    pos_opt = pos_rooms_opt_tup[0]
-    opt = rooms_opt.get(pos_opt)
+    pos_opt_room = pos_rooms_opt_tup[0]
+    opt_room = rooms_opt.get(pos_opt_room)
 
-    if opt.strip() != '':
-        rooms_opt.itemconfig(pos_opt, selectbackground="#033F4D")
+    if opt_room.strip() != '':
+        rooms_opt.itemconfig(pos_opt_room, selectbackground="#033F4D")
         if not objs_frame.winfo_viewable():
             return_btn.grid(row=0, column=0, columnspan=2)
             objs_frame.grid(row=1, column=1)
@@ -123,8 +124,9 @@ def select_state_rooms_opt(event):
             columns, rows = root.grid_size()
             for i in range(columns):
                 root.grid_columnconfigure(i, weight=1)
+
     else:
-        rooms_opt.itemconfig(pos_opt, selectbackground='#0D151C')
+        rooms_opt.itemconfig(pos_opt_room, selectbackground='#0D151C')
     
 ### Leave State Function for Rooms Options
 def leave_state_rooms_opt(event):
@@ -179,12 +181,19 @@ def hover_state_objs_opt(event):
 ### Select State Function for Objects Options
 def select_state_objs_opt(event):
     pos_objs_opt_tup = objs_opt.curselection()
-    pos_opt = pos_objs_opt_tup[0]
-    opt = objs_opt.get(pos_opt)
+    pos_opt_obj = pos_objs_opt_tup[0]
+    opt_obj = objs_opt.get(pos_opt_obj)
 
-    if opt.strip() != '':
-        objs_opt.itemconfig(pos_opt, selectbackground='#033F4D')
-        if opt.strip() == 'Lights':
+    pos_rooms_opt_tup = rooms_opt.curselection()
+    pos_opt_room = pos_rooms_opt_tup[0]
+    opt_room = rooms_opt.get(pos_opt_room)
+
+
+    if opt_obj.strip() != '':
+        global Line 
+        Line = rooms_obj_dict[opt_room][opt_obj]
+        objs_opt.itemconfig(pos_opt_obj, selectbackground='#033F4D')
+        if opt_obj.strip() == 'Lights':
             if rad_frame.winfo_viewable:
                 rad_frame.grid_remove()
             return_btn.grid(row=0, column=0, columnspan=3)
@@ -195,7 +204,7 @@ def select_state_objs_opt(event):
             for i in range(columns):
                 root.grid_columnconfigure(i, weight=1)
 
-        elif opt.strip() == 'Radiator':
+        elif opt_obj.strip() == 'Radiator':
             if lights_frame.winfo_viewable():
                 lights_frame.grid_remove()
             return_btn.grid(row=0, column=0, columnspan=3)
@@ -205,8 +214,10 @@ def select_state_objs_opt(event):
             columns, rows = root.grid_size()
             for i in range(columns):
                 root.grid_columnconfigure(i, weight=1)
+
+        rad_state.set(Line['State'])
     else:
-        objs_opt.itemconfig(pos_opt, selectbackground='#0D151C')
+        objs_opt.itemconfig(pos_opt_obj, selectbackground='#0D151C')
 
 ### Leave State Function for Objects Options
 def leave_state_objs_opt(event):
@@ -268,33 +279,52 @@ def rad_switch_enter(event):
 def rad_switch_leave(event):
     rad_switch_btn.config(bg='white')
 
-rad_switch_btn = Button(rad_state_frame, textvariable= rad_switch, width=10, height=1, font=('Segoe UI sans serif', 15, 'bold'), command=lambda:rad_switch_act(), activebackground='#B1BDC5')
+rad_switch_btn = Button(rad_state_frame, textvariable= rad_switch, width=10, height=1, font=('Segoe UI sans serif', 15, 'bold'), command=lambda:rad_switch_act(rooms_obj_dict), activebackground='#B1BDC5')
 rad_switch_btn.bind('<Enter>', rad_switch_enter)
 rad_switch_btn.bind('<Leave>', rad_switch_leave)
 rad_switch_btn.grid(row=1, column=0, sticky='ew', columnspan=2)
 
 ### Function for Radiator Switch Action
-def rad_switch_act():
+def rad_switch_act(rooms_obj_dict):
     pos_objs_opt_tup = objs_opt.curselection()
-    pos_opt = pos_objs_opt_tup[0]
-    opt_obj = objs_opt.get(pos_opt)
+    pos_opt_obj = pos_objs_opt_tup[0]
+    opt_obj = objs_opt.get(pos_opt_obj)
 
     pos_rooms_opt_tup = rooms_opt.curselection()
-    pos_opt = pos_rooms_opt_tup[0]
-    opt_room = rooms_opt.get(pos_opt)
+    pos_opt_room = pos_rooms_opt_tup[0]
+    opt_room = rooms_opt.get(pos_opt_room)
 
-    if rad_switch.get() == 'OFF' and rad_state.get() == 'ON':
-        rad_switch.set('ON')
-        rad_state_lab.config(bg='#C41200', fg='#FFE6D8')
-        rad_state.set('OFF')
-        rad_min_btn.grid_remove()
-        rad_plus_btn.grid_remove()
-    elif rad_switch.get() == 'ON' and rad_state.get() == 'OFF':
-        rad_switch.set('OFF')
-        rad_state_lab.config(bg='#00C59F', fg='#364B44')
-        rad_state.set('ON')
-        rad_min_btn.grid(row=1, column=0, padx=5, pady=(10,0))
-        rad_plus_btn.grid(row=1, column=2, padx=5, pady=(10,0))
+    print(opt_room)
+    print(opt_obj)
+
+    if opt_room in rooms_obj_dict and opt_obj :
+        if rad_switch.get() == 'OFF' and rad_state.get() == 'ON' and rooms_obj_dict[opt_room][opt_obj]['State'] == 'ON' :
+            rooms_obj_dict[opt_room][opt_obj]['State'] = 'OFF'
+            obj_value = rooms_obj_dict[opt_room][opt_obj]['State']
+            rad_state.set(obj_value)
+
+            rad_switch.set('ON')
+            rad_state_lab.config(bg='#C41200', fg='#FFE6D8')
+            
+            rad_min_btn.grid_remove()
+            rad_plus_btn.grid_remove()
+        elif rad_switch.get() == 'ON' and rad_state.get() == 'OFF' and rooms_obj_dict[opt_room][opt_obj]['State'] == 'OFF' :
+            rooms_obj_dict[opt_room][opt_obj]['State'] = 'ON'
+            obj_value = rooms_obj_dict[opt_room][opt_obj]['State']
+            rad_state.set(obj_value)
+
+            rad_switch.set('OFF')
+            rad_state_lab.config(bg='#00C59F', fg='#364B44')
+
+            rad_min_btn.grid(row=1, column=0, padx=5, pady=(10,0))
+            rad_plus_btn.grid(row=1, column=2, padx=5, pady=(10,0))
+        print(str(rooms_obj_dict[opt_room][opt_obj]['State']))
+
+    # if opt_room in rooms_obj_dict and opt_obj in opt_room:
+    #     obj_val = opt_room[opt_obj]
+    #     if obj_val[state.get()] == 'OFF':
+    #        obj_val[state.get()] = 'ON'
+
 
     if mes_lab.get(0) == 'NO UPDATES MADE!':
         mes_lab.delete(0)
@@ -329,22 +359,24 @@ def rad_min_leave_state(event):
 
 def decr_temp(temp):
     pos_objs_opt_tup = objs_opt.curselection()
-    pos_opt = pos_objs_opt_tup[0]
-    opt_obj = objs_opt.get(pos_opt)
+    pos_opt_obj = pos_objs_opt_tup[0]
+    opt_obj = objs_opt.get(pos_opt_obj)
 
     pos_rooms_opt_tup = rooms_opt.curselection()
-    pos_opt = pos_rooms_opt_tup[0]
-    opt_room = rooms_opt.get(pos_opt)
+    pos_opt_room = pos_rooms_opt_tup[0]
+    opt_room = rooms_opt.get(pos_opt_room)
 
-    temp_act = temp.get()
+    temp_act = rooms_obj_dict[opt_room][opt_obj]['Temperature']
     if temp_act > 18:
-        temp.set(temp_act - 1)
+        temp_act -= 1
+        rooms_obj_dict[opt_room][opt_obj]['Temperature'] = temp_act
+        temp.set(rooms_obj_dict[opt_room][opt_obj]['Temperature'])
 
         if mes_lab.get(0) == 'NO UPDATES MADE!':
             mes_lab.delete(0)
-            mes_lab.insert(END, '- ' + opt_room + ' ' + opt_obj + ' : ' + str(temp.get()) + '°')
+            mes_lab.insert(END, '- ' + opt_room + ' ' + opt_obj + ' : ' + str(temp_act) + '°')
         else:
-            mes_lab.insert(END, '- ' + opt_room + ' ' + opt_obj + ' : ' + str(temp.get()) + '°')
+            mes_lab.insert(END, '- ' + opt_room + ' ' + opt_obj + ' : ' + str(temp_act) + '°')
 
 rad_min_btn = Button(rad_ctrl_frame, width=2, height=1, font=('Archivo Black', 15, 'bold'), text='-', bg='#F1FBFF', fg='#2A3235', activebackground='#B6C0C4', command=lambda: decr_temp(temp))
 rad_min_btn.grid(row=1, column=0, padx=5, pady=(10,0))
@@ -361,21 +393,24 @@ def rad_plus_leave_state(event):
 
 def incr_temp(temp):
     pos_objs_opt_tup = objs_opt.curselection()
-    pos_opt = pos_objs_opt_tup[0]
-    opt_obj = objs_opt.get(pos_opt)
+    pos_opt_obj = pos_objs_opt_tup[0]
+    opt_obj = objs_opt.get(pos_opt_obj)
 
     pos_rooms_opt_tup = rooms_opt.curselection()
-    pos_opt = pos_rooms_opt_tup[0]
-    opt_room = rooms_opt.get(pos_opt)
+    pos_opt_room = pos_rooms_opt_tup[0]
+    opt_room = rooms_opt.get(pos_opt_room)
 
-    temp_act = temp.get()
+    temp_act = rooms_obj_dict[opt_room][opt_obj]['Temperature']
+
     if temp_act < 40:
-        temp.set(temp_act + 1)
+        temp_act += 1
+        rooms_obj_dict[opt_room][opt_obj]['Temperature'] = temp_act
+        temp.set(rooms_obj_dict[opt_room][opt_obj]['Temperature'])
         if mes_lab.get(0) == 'NO UPDATES MADE!':
             mes_lab.delete(0)
-            mes_lab.insert(END, '- ' + opt_room + ' ' + opt_obj + ' : ' + str(temp.get()) + '°')
+            mes_lab.insert(END, '- ' + opt_room + ' ' + opt_obj + ' : ' + str(temp_act) + '°')
         else:
-            mes_lab.insert(END, '- ' + opt_room + ' ' + opt_obj + ' : ' + str(temp.get()) + '°')
+            mes_lab.insert(END, '- ' + opt_room + ' ' + opt_obj + ' : ' + str(temp_act) + '°')
         
 
 rad_plus_btn = Button(rad_ctrl_frame, width=2, height=0, font=('Archivo Black', 15, 'bold'), text='+', bg='#F1FBFF', fg='#2A3235', activebackground='#B6C0C4', command=lambda: incr_temp(temp))
@@ -383,6 +418,25 @@ rad_plus_btn.grid(row=1, column=2, padx=5, pady=(10,0))
 rad_plus_btn.bind('<Enter>', rad_plus_enter_state)
 rad_plus_btn.bind('<Leave>', rad_plus_leave_state)
 
+upd_room_rad = Button(rad_frame, text='UPDATE ROOM', font=('Segoe UI sans serif', 13, 'bold'), activebackground='#C68226', bg='#039590', fg='#DBE8E6', command=lambda:update_room_rad())
+upd_room_rad.grid(row=3, column=0, pady=15)
+
+def update_room_rad():
+    pos_objs_opt_tup = objs_opt.curselection()
+    pos_opt_obj = pos_objs_opt_tup[0]
+    opt_obj = objs_opt.get(pos_opt_obj)
+
+    pos_rooms_opt_tup = rooms_opt.curselection()
+    pos_opt_room = pos_rooms_opt_tup[0]
+    opt_room = rooms_opt.get(pos_opt_room)
+
+    if opt_obj == 'Radiator':
+        rad_state.set(rooms_obj_dict[opt_room][opt_obj]['State'])
+        if rooms_obj_dict[opt_room]['Radiator']['State'] == 'ON':
+            rad_switch.set('OFF')
+        else:
+            rad_switch.set('ON')
+        temp.set(rooms_obj_dict[opt_room]['Radiator']['Temperature'])
 
 # Lights Frame Section
 ## Lights Wrapper/ Frame
@@ -414,37 +468,44 @@ def light_switch_enter(event):
 def light_switch_leave(event):
     light_switch_btn.config(bg='white')
 
-light_switch_btn = Button(lights_state_frame, textvariable= switch, width=10, height=1, font=('Segoe UI sans serif', 15, 'bold'), command=lambda:switch_act(), activebackground='#B1BDC5')
+light_switch_btn = Button(lights_state_frame, textvariable= switch, width=10, height=1, font=('Segoe UI sans serif', 15, 'bold'), command=lambda:light_switch_act(), activebackground='#B1BDC5')
 light_switch_btn.bind('<Enter>', light_switch_enter)
 light_switch_btn.bind('<Leave>', light_switch_leave)
 light_switch_btn.grid(row=1, column=0, sticky='ew', columnspan=2)
 
 ### Function for Light Switch Action
-def switch_act():
+def light_switch_act():
     pos_objs_opt_tup = objs_opt.curselection()
-    pos_opt = pos_objs_opt_tup[0]
-    opt_obj = objs_opt.get(pos_opt)
+    pos_opt_obj = pos_objs_opt_tup[0]
+    opt_obj = objs_opt.get(pos_opt_obj)
 
     pos_rooms_opt_tup = rooms_opt.curselection()
-    pos_opt = pos_rooms_opt_tup[0]
-    opt_room = rooms_opt.get(pos_opt)
+    pos_opt_room = pos_rooms_opt_tup[0]
+    opt_room = rooms_opt.get(pos_opt_room)
 
-    if switch.get() == 'OFF' and state.get() == 'ON':
-        switch.set('ON')
-        lights_state.config(bg='#C41200', fg='#FFE6D8')
-        state.set('OFF')
-        min_intens_btn.grid_remove()
-        mid_intens_btn.grid_remove()
-        high_intens_btn.grid_remove()
+    if opt_room in rooms_obj_dict and opt_obj :
+        if switch.get() == 'OFF' and state.get() == 'ON' and rooms_obj_dict[opt_room][opt_obj]['State'] == 'ON' :
 
+            rooms_obj_dict[opt_room][opt_obj]['State'] = 'OFF'
+            obj_value = rooms_obj_dict[opt_room][opt_obj]['State']
+            state.set(obj_value)
 
-    elif switch.get() == 'ON' and state.get() == 'OFF':
-        switch.set('OFF')
-        lights_state.config(bg='#00C59F', fg='#364B44')
-        state.set('ON')
-        min_intens_btn.grid(row=2, column=0, padx=10)
-        mid_intens_btn.grid(row=2, column=1, padx=10)
-        high_intens_btn.grid(row=2, column=2, padx=10, pady=15)
+            lights_state.config(bg='#C41200', fg='#FFE6D8')
+            switch.set('ON')
+            min_intens_btn.grid_remove()
+            mid_intens_btn.grid_remove()
+            high_intens_btn.grid_remove()
+
+        elif switch.get() == 'ON' and state.get() == 'OFF' and rooms_obj_dict[opt_room][opt_obj]['State'] == 'OFF' :
+            rooms_obj_dict[opt_room][opt_obj]['State'] = 'ON'
+            obj_value = rooms_obj_dict[opt_room][opt_obj]['State']
+            state.set(obj_value)            
+            
+            lights_state.config(bg='#00C59F', fg='#364B44')
+            switch.set('OFF')
+            min_intens_btn.grid(row=2, column=0, padx=10)
+            mid_intens_btn.grid(row=2, column=1, padx=10)
+            high_intens_btn.grid(row=2, column=2, padx=10, pady=15)
 
     if mes_lab.get(0) == 'NO UPDATES MADE!':
         mes_lab.delete(0)
@@ -500,7 +561,10 @@ def set_intens_low(intens):
     pos_opt = pos_rooms_opt_tup[0]
     opt_room = rooms_opt.get(pos_opt)
 
-    intens.set('LOW')
+    rooms_obj_dict[opt_room][opt_obj]['Brightness'] = 'LOW'
+    obj_value = rooms_obj_dict[opt_room][opt_obj]['Brightness']
+    intens.set(obj_value)
+
     global min_clicked, mid_clicked, high_clicked
     min_clicked = True
     mid_clicked = False
@@ -537,7 +601,10 @@ def set_intens_mid(intens):
     pos_opt = pos_rooms_opt_tup[0]
     opt_room = rooms_opt.get(pos_opt)
 
-    intens.set('MID')
+    rooms_obj_dict[opt_room][opt_obj]['Brightness'] = 'MID'
+    obj_value = rooms_obj_dict[opt_room][opt_obj]['Brightness']
+    intens.set(obj_value)
+
     global min_clicked, mid_clicked, high_clicked
     min_clicked = False
     mid_clicked = True
@@ -579,7 +646,10 @@ def set_intens_high(intens):
     pos_opt = pos_rooms_opt_tup[0]
     opt_room = rooms_opt.get(pos_opt)
 
-    intens.set('HIGH')
+    rooms_obj_dict[opt_room][opt_obj]['Brightness'] = 'HIGH'
+    obj_value = rooms_obj_dict[opt_room][opt_obj]['Brightness']
+    intens.set(obj_value)
+
     global min_clicked, mid_clicked, high_clicked
     min_clicked = False
     mid_clicked = False
@@ -598,6 +668,41 @@ high_intens_btn = Button(intens_frame, text='HIGH', bg='#111E26', fg='#D3D6DB', 
 high_intens_btn.grid(row=2, column=2, padx=10, pady=15)
 high_intens_btn.bind('<Enter>', high_enter)
 high_intens_btn.bind('<Leave>', high_leave)
+
+upd_room_light = Button(lights_frame, text='UPDATE ROOM', font=('Segoe UI sans serif', 13, 'bold'), activebackground='#C68226', bg='#039590', fg='#DBE8E6', command=lambda:update_room_lights())
+upd_room_light.grid(row=3, column=0, pady=15)
+
+def update_room_lights():
+    pos_objs_opt_tup = objs_opt.curselection()
+    pos_opt_obj = pos_objs_opt_tup[0]
+    opt_obj = objs_opt.get(pos_opt_obj)
+
+    pos_rooms_opt_tup = rooms_opt.curselection()
+    pos_opt_room = pos_rooms_opt_tup[0]
+    opt_room = rooms_opt.get(pos_opt_room)
+
+    
+    if opt_obj == 'Lights':
+        state.set(rooms_obj_dict[opt_room][opt_obj]['State'])
+        if rooms_obj_dict[opt_room]['Lights']['State'] == 'ON':
+            switch.set('OFF')
+        else:
+            switch.set('ON')
+        intens.set(rooms_obj_dict[opt_room]['Lights']['Brightness'])
+    
+    if rooms_obj_dict[opt_room]['Lights']['Brightness'] == 'LOW':
+        min_intens_btn.config(bg='#B6A999', fg='#4F4537')
+        mid_intens_btn.config(bg='#111E26', fg='#D3D6DB')
+        high_intens_btn.config(bg='#111E26', fg='#D3D6DB')
+    elif rooms_obj_dict[opt_room]['Lights']['Brightness'] == 'MID':
+        mid_intens_btn.config(bg='#B6A999', fg='#4F4537')
+        min_intens_btn.config(bg='#111E26', fg='#D3D6DB')
+        high_intens_btn.config(bg='#111E26', fg='#D3D6DB')
+    elif rooms_obj_dict[opt_room]['Lights']['Brightness'] == 'HIGH':
+        high_intens_btn.config(bg='#B6A999', fg='#4F4537')
+        min_intens_btn.config(bg='#111E26', fg='#D3D6DB')
+        mid_intens_btn.config(bg='#111E26', fg='#D3D6DB')
+
 
 upd_frame = Frame(root, width=30, height=50, borderwidth=0, highlightthickness=0, bg='#111E26')
 
