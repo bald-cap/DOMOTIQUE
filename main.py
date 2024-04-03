@@ -143,19 +143,21 @@ room_form = Entry(mod_rooms_frame, width=30, font=('Segoe UI sans serif', 13, 'i
 room_form.bind('<Button-1>', change_text)
 
 def submit_new_room():
-    rooms_obj_dict[new_room_name.get()] = {
-        'Radiator': {
-            'State' : 'OFF',
-            'Temperature' : 20 
-        },
-        'Lights' : {
-            'State' : 'OFF',
-            'Brightness' : 'LOW'
+    if new_room_name.get() not in [' ', '', 'Enter room name: ']:
+        rooms_obj_dict[new_room_name.get()] = {
+            'Radiator': {
+                'State' : 'OFF',
+                'Temperature' : 20 
+            },
+            'Lights' : {
+                'State' : 'OFF',
+                'Brightness' : 'LOW'
+            }
         }
-    }
 
-    rooms_opt.insert(END, new_room_name.get())
-    rooms_opt.insert(END, '')
+
+        rooms_opt.insert(END, new_room_name.get())
+        rooms_opt.insert(END, '')
     mod_rooms_frame.grid_remove()
 
 def new_room_sub_enter_state(event):
