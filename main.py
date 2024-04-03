@@ -39,7 +39,6 @@ rooms_obj_dict = {
     }
 }
 
-global Line
 
 ## Return Button
 def return_home():
@@ -51,10 +50,29 @@ def return_home():
         rad_frame.grid_remove()
     if lights_frame.winfo_viewable():
         lights_frame.grid_remove()
+    if room_form.winfo_viewable():
+        room_form.grid_remove()
+        
+    if mod_return_btn.winfo_viewable():
+        mod_return_btn.grid_remove()
+    if new_room_sub.winfo_viewable():
+        new_room_sub.grid_remove()
+
+    old_room_sub.grid_remove()
+    del_room_form.grid_remove()
+
+    
+    if not add_room_btn.winfo_viewable():
+        add_room_btn.grid(row=0, column=0, padx=(0, 10))
+    if not del_room_btn.winfo_viewable():
+        del_room_btn.grid(row=0, column=1)
     
     return_btn.grid_remove()
     wel_lab.grid(row=0, column=0, columnspan=3)
-    wel_lab_btn.grid(row=1, column=0, columnspan=3)
+    mod_rooms_frame.grid(row=1, column=0, columnspan=3)
+    wel_lab_btn.grid(row=2, column=0, columnspan=3)
+    if upd_frame.winfo_viewable():
+        upd_frame.grid(row=2, column=0, pady=(0, 15), columnspan=3)
 
 
 def enter_state(event):
@@ -64,9 +82,9 @@ def leave_state(event):
     return_btn.config(bg='#39454B')
 
 return_btn = Button(root, width=25, height=0, text="RETURN TO HOMEPAGE", font=("Archivo Black", 10, 'bold'), command=lambda: return_home(), justify='center', bg="#39454B", fg='#E9EBEE')
-
 return_btn.bind('<Enter>', enter_state)
 return_btn.bind('<Leave>', leave_state)
+
 
 # Welcome Screen
 wel_lab = Label(root, text='WELCOME TO DOMOTIQUE.\n CLICK START TO BEGIN!', font=('Segoe UI sans serif', 13, 'bold'), bg='#1E2C35', fg='#D7F0EB', justify='center')
@@ -75,6 +93,11 @@ wel_lab.grid(row=0, column=0)
 def start():
     wel_lab.grid_remove()
     wel_lab_btn.grid_remove()
+    mod_rooms_frame.grid_remove()
+
+    if new_room_sub.winfo_viewable():
+        new_room_sub.grid_remove()
+
     return_btn.grid(row=0, column=0, pady=10)
     rooms_frame.grid(row=1, column=0)
 
@@ -84,10 +107,147 @@ def wel_lab_enter_state(event):
 def wel_lab_leave_state(event):
     wel_lab_btn.config(bg='#ffffff')
 
+## Modify Rooms - Add / Remove
+mod_rooms_frame = Frame(root, width=30, bg="#111E26")
+mod_rooms_frame.grid(row=1, column=0)
+
+new_room_name = StringVar()
+new_room_name.set('Enter room name: ')
+
+def mod_return_home():
+    new_room_sub.grid_remove()
+    mod_return_btn.grid_remove()
+    room_form.grid_remove()
+    
+    del_room_form.grid_remove()
+    old_room_sub.grid_remove()
+
+    add_room_btn.grid(row=0, column=0, padx=(0, 15))
+    del_room_btn.grid(row=0, column=1)  
+
+def mod_enter_state(event):
+    mod_return_btn.config(bg="#273339")
+
+def mod_leave_state(event):
+    mod_return_btn.config(bg='#39454B')
+
+mod_return_btn = Button(mod_rooms_frame, width=2, height=0, text="<", font=("Archivo Black", 10, 'bold'), command=lambda: mod_return_home(), justify='center', bg="#39454B", fg='#E9EBEE', activebackground='#273339', activeforeground='#E9EBEE')
+mod_return_btn.bind('<Enter>', mod_enter_state)
+mod_return_btn.bind('<Leave>', mod_leave_state)
+
+def change_text(event):
+    new_room_name.set('')
+    room_form.config(fg='black', font=('Segoe UI sans serif', 13))
+
+room_form = Entry(mod_rooms_frame, width=30, font=('Segoe UI sans serif', 13, 'italic'), textvariable=new_room_name, fg='grey')
+room_form.bind('<Button-1>', change_text)
+
+def submit_new_room():
+    rooms_obj_dict[new_room_name.get()] = {
+        'Radiator': {
+            'State' : 'OFF',
+            'Temperature' : 20 
+        },
+        'Lights' : {
+            'State' : 'OFF',
+            'Brightness' : 'LOW'
+        }
+    }
+
+    rooms_opt.insert(END, new_room_name.get())
+    rooms_opt.insert(END, '')
+    mod_rooms_frame.grid_remove()
+
+def new_room_sub_enter_state(event):
+    new_room_sub.config(bg='#008581')
+
+def new_room_sub_leave_state(event):
+    new_room_sub.config(bg='#039590')
+
+new_room_sub = Button(mod_rooms_frame, font=('Segoe UI sans serif', 13, 'bold'), text='SUBMIT', bg='#039590', fg='#DFF2EA', activebackground='#008581', activeforeground='#DFF2EA', command=lambda:submit_new_room())
+new_room_sub.bind('<Enter>', new_room_sub_enter_state)
+new_room_sub.bind('<Leave>', new_room_sub_leave_state)
+
+
+def add_room_btn_enter_state(event):
+    add_room_btn.config(bg='#008581')
+
+def add_room_btn_leave_state(event):
+    add_room_btn.config(bg='#039590')
+
+def add_room_act():
+    add_room_btn.grid_remove()
+    del_room_btn.grid_remove()
+
+    mod_return_btn.grid(row=0, column=0)
+    room_form.grid(row=1, column=0, pady=10)
+    new_room_sub.grid(row=2, column=0)
+
+    wel_lab_btn.grid(row=2, column=0)
+
+add_room_btn = Button(mod_rooms_frame, text='ADD ROOM', font=('Segoe UI sans serif', 13, 'bold'), bg='#039590', fg='#DFF2EA', activebackground='#008581', activeforeground='#DFF2EA', command=lambda:add_room_act())
+add_room_btn.bind('<Enter>', add_room_btn_enter_state)
+add_room_btn.bind('<Leave>', add_room_btn_leave_state)
+add_room_btn.grid(row=0, column=0, padx=(0, 10))
+
+
+# Deleting a room
+old_room_name = StringVar()
+old_room_name.set('Enter Room Name: ')
+
+def del_change_text(event):
+    old_room_name.set('')
+    del_room_form.config(fg='black', font=('Segoe UI sans serif', 13))
+
+del_room_form = Entry(mod_rooms_frame, width=30, font=('Segoe UI sans serif', 13, 'italic'), textvariable=old_room_name, fg='grey')
+del_room_form.bind('<Button-1>', del_change_text)
+
+
+def del_room_btn_enter_state(event):
+    del_room_btn.config(bg='#692602')
+
+def del_room_btn_leave_state(event):
+    del_room_btn.config(bg='#943603')
+
+def del_room_act():
+    add_room_btn.grid_remove()
+    del_room_btn.grid_remove()
+
+    mod_return_btn.grid(row=0, column=0)
+    del_room_form.grid(row=1, column=0, pady=10)
+    old_room_sub.grid(row=2, column=0)
+
+    wel_lab_btn.grid(row=2, column=0)
+
+del_room_btn = Button(mod_rooms_frame, text='DELETE ROOM', font=('Segoe UI sans serif', 13, 'bold'), bg='#943603', fg='#F3EADA', activebackground='#692602', activeforeground='#FFBD84', command=lambda: del_room_act())
+del_room_btn.bind('<Enter>', del_room_btn_enter_state)
+del_room_btn.bind('<Leave>', del_room_btn_leave_state)
+del_room_btn.grid(row=0, column=1)
+
+def submit_old_room():
+    if old_room_name.get() in rooms_obj_dict:
+        del rooms_obj_dict[old_room_name.get()]
+
+    for i in range(rooms_opt.size()):
+        if rooms_opt.get(i) == old_room_name.get():
+            rooms_opt.delete(i)
+    mod_rooms_frame.grid_remove()
+
+def old_room_sub_enter_state(event):
+    del_room_btn.config(bg='#692602')
+
+def old_room_sub_leave_state(event):
+    del_room_btn.config(bg='#943603')
+
+old_room_sub = Button(mod_rooms_frame, font=('Segoe UI sans serif', 13, 'bold'), text='SUBMIT', bg='#943603', fg='#F3EADA', activebackground='#692602', activeforeground='#F3EADA', command=lambda:submit_old_room())
+old_room_sub.bind('<Enter>', old_room_sub_enter_state)
+old_room_sub.bind('<Leave>', old_room_sub_leave_state)
+
+
 wel_lab_btn = Button(root, text='START', font=('Segoe UI sans serif', 13, 'bold'), fg='#1E2C35', bg='#ffffff', activebackground='#D0DEE7', activeforeground='#1E2C35', command=lambda: start())
 wel_lab_btn.bind('<Enter>', wel_lab_enter_state)
 wel_lab_btn.bind('<Leave>', wel_lab_leave_state)
-wel_lab_btn.grid(row=1, column=0)
+wel_lab_btn.grid(row=2, column=0)
 
 # Rooms Frame Section
 ## Room Wrapper / Frame
@@ -420,7 +580,7 @@ def upd_room_rad_enter_state(event):
 def upd_room_rad_leave_state(event):
     upd_room_rad.config(bg='#039590')
 
-upd_room_rad = Button(rad_frame, text='UPDATE ROOM', font=('Segoe UI sans serif', 13, 'bold'), activebackground='#008581', activeforeground='#DBE8E6', bg='#039590', fg='#DBE8E6', command=lambda:update_room_rad())
+upd_room_rad = Button(rad_frame, text='UPDATE ROOM', font=('Segoe UI sans serif', 13, 'bold'), activebackground='#008581', activeforeground='#D4E7DF', bg='#039590', fg='#D4E7DF', command=lambda:update_room_rad())
 upd_room_rad.grid(row=3, column=0, pady=15)
 upd_room_rad.bind('<Enter>', upd_room_rad_enter_state)
 upd_room_rad.bind('<Leave>', upd_room_rad_leave_state)
@@ -681,7 +841,7 @@ def upd_room_light_enter_state(event):
 def upd_room_light_leave_state(event):
     upd_room_light.config(bg='#039590')
 
-upd_room_light = Button(lights_frame, text='UPDATE ROOM', font=('Segoe UI sans serif', 13, 'bold'), activebackground='#008581', activeforeground='#DBE8E6', bg='#039590', fg='#DBE8E6', command=lambda:update_room_lights())
+upd_room_light = Button(lights_frame, text='UPDATE ROOM', font=('Segoe UI sans serif', 13, 'bold'), activebackground='#008581', activeforeground='#D4E7DF', bg='#039590', fg='#D4E7DF', command=lambda:update_room_lights())
 upd_room_light.grid(row=3, column=0, pady=15)
 upd_room_light.bind('<Enter>', upd_room_light_enter_state)
 upd_room_light.bind('<Leave>', upd_room_light_leave_state)
