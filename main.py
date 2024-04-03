@@ -9,31 +9,31 @@ root.config(bg="#111E26")
 rooms_obj_dict = {
     'Kitchen':{
         'Radiator': {
-            'State' : 'ON',
+            'State' : 'OFF',
             'Temperature' : 20 
         },
         'Lights' : {
-            'State' : 'ON',
+            'State' : 'OFF',
             'Brightness' : 'LOW'
         }
     },
     'Bedroom':{
         'Radiator': {
-            'State' : 'ON',
+            'State' : 'OFF',
             'Temperature' : 20 
         },
         'Lights' : {
-            'State' : 'ON',
+            'State' : 'OFF',
             'Brightness' : 'LOW'
         }
     },
     'Toilet':{
         'Radiator': {
-            'State' : 'ON',
+            'State' : 'OFF',
             'Temperature' : 20 
         },
         'Lights' : {
-            'State' : 'ON',
+            'State' : 'OFF',
             'Brightness' : 'LOW'
         }
     }
@@ -190,13 +190,14 @@ def select_state_objs_opt(event):
 
 
     if opt_obj.strip() != '':
-        global Line 
-        Line = rooms_obj_dict[opt_room][opt_obj]
         objs_opt.itemconfig(pos_opt_obj, selectbackground='#033F4D')
         if opt_obj.strip() == 'Lights':
             if rad_frame.winfo_viewable:
                 rad_frame.grid_remove()
             return_btn.grid(row=0, column=0, columnspan=3)
+            min_intens_btn.grid_remove()
+            mid_intens_btn.grid_remove()
+            high_intens_btn.grid_remove()
             lights_frame.grid(row=1, column=2)
             upd_frame.grid(row=2, column=1, pady=(0, 15))
 
@@ -208,6 +209,8 @@ def select_state_objs_opt(event):
             if lights_frame.winfo_viewable():
                 lights_frame.grid_remove()
             return_btn.grid(row=0, column=0, columnspan=3)
+            rad_plus_btn.grid_remove()
+            rad_min_btn.grid_remove()
             rad_frame.grid(row=1, column=2)
             upd_frame.grid(row=2, column=1, pady=(0, 15))
 
@@ -215,7 +218,6 @@ def select_state_objs_opt(event):
             for i in range(columns):
                 root.grid_columnconfigure(i, weight=1)
 
-        rad_state.set(Line['State'])
     else:
         objs_opt.itemconfig(pos_opt_obj, selectbackground='#0D151C')
 
@@ -267,13 +269,13 @@ rad_state_intro.grid(row=0, column=0)
 
 ## Radiator State Value
 rad_state = StringVar()
-rad_state.set("ON")
-rad_state_lab = Label(rad_state_frame, textvariable=rad_state, font=('Segoe UI sans serif', 14, 'bold'), bg='#00C59F', fg='#364B44')
+rad_state.set("OFF")
+rad_state_lab = Label(rad_state_frame, textvariable=rad_state, font=('Segoe UI sans serif', 14, 'bold'), bg='#C41200', fg='#FFE6D8')
 rad_state_lab.grid(row=0, column=1, padx=5, pady=5)
 
 ## Radiator Switch Button
 rad_switch = StringVar()
-rad_switch.set('OFF')
+rad_switch.set('ON')
 def rad_switch_enter(event):
     rad_switch_btn.config(bg='#B1BDC5')
 def rad_switch_leave(event):
@@ -320,10 +322,6 @@ def rad_switch_act(rooms_obj_dict):
             rad_plus_btn.grid(row=1, column=2, padx=5, pady=(10,0))
         print(str(rooms_obj_dict[opt_room][opt_obj]['State']))
 
-    # if opt_room in rooms_obj_dict and opt_obj in opt_room:
-    #     obj_val = opt_room[opt_obj]
-    #     if obj_val[state.get()] == 'OFF':
-    #        obj_val[state.get()] = 'ON'
 
 
     if mes_lab.get(0) == 'NO UPDATES MADE!':
@@ -379,7 +377,6 @@ def decr_temp(temp):
             mes_lab.insert(END, '- ' + opt_room + ' ' + opt_obj + ' : ' + str(temp_act) + '°')
 
 rad_min_btn = Button(rad_ctrl_frame, width=2, height=1, font=('Archivo Black', 15, 'bold'), text='-', bg='#F1FBFF', fg='#2A3235', activebackground='#B6C0C4', command=lambda: decr_temp(temp))
-rad_min_btn.grid(row=1, column=0, padx=5, pady=(10,0))
 rad_min_btn.bind('<Enter>', rad_min_enter_state)
 rad_min_btn.bind('<Leave>', rad_min_leave_state)
 
@@ -414,12 +411,19 @@ def incr_temp(temp):
         
 
 rad_plus_btn = Button(rad_ctrl_frame, width=2, height=0, font=('Archivo Black', 15, 'bold'), text='+', bg='#F1FBFF', fg='#2A3235', activebackground='#B6C0C4', command=lambda: incr_temp(temp))
-rad_plus_btn.grid(row=1, column=2, padx=5, pady=(10,0))
 rad_plus_btn.bind('<Enter>', rad_plus_enter_state)
 rad_plus_btn.bind('<Leave>', rad_plus_leave_state)
 
-upd_room_rad = Button(rad_frame, text='UPDATE ROOM', font=('Segoe UI sans serif', 13, 'bold'), activebackground='#C68226', bg='#039590', fg='#DBE8E6', command=lambda:update_room_rad())
+def upd_room_rad_enter_state(event):
+    upd_room_rad.config(bg='#008581')
+
+def upd_room_rad_leave_state(event):
+    upd_room_rad.config(bg='#039590')
+
+upd_room_rad = Button(rad_frame, text='UPDATE ROOM', font=('Segoe UI sans serif', 13, 'bold'), activebackground='#008581', activeforeground='#DBE8E6', bg='#039590', fg='#DBE8E6', command=lambda:update_room_rad())
 upd_room_rad.grid(row=3, column=0, pady=15)
+upd_room_rad.bind('<Enter>', upd_room_rad_enter_state)
+upd_room_rad.bind('<Leave>', upd_room_rad_leave_state)
 
 def update_room_rad():
     pos_objs_opt_tup = objs_opt.curselection()
@@ -433,9 +437,15 @@ def update_room_rad():
     if opt_obj == 'Radiator':
         rad_state.set(rooms_obj_dict[opt_room][opt_obj]['State'])
         if rooms_obj_dict[opt_room]['Radiator']['State'] == 'ON':
+            rad_plus_btn.grid(row=1, column=2, padx=5, pady=(10,0))
+            rad_min_btn.grid(row=1, column=0, padx=5, pady=(10,0))
             rad_switch.set('OFF')
+            rad_state_lab.config(bg='#00C59F', fg='#364B44')
         else:
+            rad_min_btn.grid_remove()
+            rad_plus_btn.grid_remove()
             rad_switch.set('ON')
+            rad_state_lab.config(bg='#C41200', fg='#FFE6D8')
         temp.set(rooms_obj_dict[opt_room]['Radiator']['Temperature'])
 
 # Lights Frame Section
@@ -456,13 +466,13 @@ lights_state_intro.grid(row=0, column=0)
 
 ## Lights State Value
 state = StringVar()
-state.set("ON")
-lights_state = Label(lights_state_frame, textvariable=state, font=('Segoe UI sans serif', 14, 'bold'), bg='#00C59F', fg='#364B44')
+state.set("OFF")
+lights_state = Label(lights_state_frame, textvariable=state, font=('Segoe UI sans serif', 14, 'bold'), bg='#C41200', fg='#FFE6D8')
 lights_state.grid(row=0, column=1, padx=5, pady=5)
 
 ## Light Switch Button
 switch = StringVar()
-switch.set('OFF')
+switch.set('ON')
 def light_switch_enter(event):
     light_switch_btn.config(bg='#B1BDC5')
 def light_switch_leave(event):
@@ -546,10 +556,9 @@ def min_leave(event):
     global min_clicked
     if not min_clicked:
         min_intens_btn.config(bg='#111E26', fg='#D3D6DB')
-min_intens_btn = Button(intens_frame, text='LOW', bg='#111E26', fg='#D3D6DB', font=('Segoe UI sans serif', 13, 'bold'), activeforeground='#D3D6DB', activebackground='#014853', command=lambda: set_intens_low(intens))
+min_intens_btn = Button(intens_frame, text='LOW', bg='#B6A999', fg='#4F4537', font=('Segoe UI sans serif', 13, 'bold'), activeforeground='#D3D6DB', activebackground='#014853', command=lambda: set_intens_low(intens))
 min_intens_btn.bind('<Enter>', min_enter)
 min_intens_btn.bind('<Leave>', min_leave)
-min_intens_btn.grid(row=2, column=0, padx=10)
 
 ### Function for Setting Brightness to Low
 def set_intens_low(intens):
@@ -622,8 +631,6 @@ def set_intens_mid(intens):
 mid_intens_btn = Button(intens_frame, text='MID', bg='#111E26', fg='#D3D6DB', font=('Segoe UI sans serif', 13, 'bold'), activeforeground='#D3D6DB', activebackground='#014853', command=lambda: set_intens_mid(intens))
 mid_intens_btn.bind('<Enter>', mid_enter)
 mid_intens_btn.bind('<Leave>', mid_leave)
-mid_intens_btn.grid(row=2, column=1, padx=10)
-
 
 ## Button for High Brightness
 def high_enter(event):
@@ -665,12 +672,19 @@ def set_intens_high(intens):
         mes_lab.insert(END, '- ' + opt_room + ' ' + opt_obj + ', ' + 'BRIGHTNESS : HIGH')
 
 high_intens_btn = Button(intens_frame, text='HIGH', bg='#111E26', fg='#D3D6DB', font=('Segoe UI sans serif', 13, 'bold'), activeforeground='#D3D6DB', activebackground='#014853', command=lambda: set_intens_high(intens))
-high_intens_btn.grid(row=2, column=2, padx=10, pady=15)
 high_intens_btn.bind('<Enter>', high_enter)
 high_intens_btn.bind('<Leave>', high_leave)
 
-upd_room_light = Button(lights_frame, text='UPDATE ROOM', font=('Segoe UI sans serif', 13, 'bold'), activebackground='#C68226', bg='#039590', fg='#DBE8E6', command=lambda:update_room_lights())
+def upd_room_light_enter_state(event):
+    upd_room_light.config(bg='#008581')
+
+def upd_room_light_leave_state(event):
+    upd_room_light.config(bg='#039590')
+
+upd_room_light = Button(lights_frame, text='UPDATE ROOM', font=('Segoe UI sans serif', 13, 'bold'), activebackground='#008581', activeforeground='#DBE8E6', bg='#039590', fg='#DBE8E6', command=lambda:update_room_lights())
 upd_room_light.grid(row=3, column=0, pady=15)
+upd_room_light.bind('<Enter>', upd_room_light_enter_state)
+upd_room_light.bind('<Leave>', upd_room_light_leave_state)
 
 def update_room_lights():
     pos_objs_opt_tup = objs_opt.curselection()
@@ -685,9 +699,20 @@ def update_room_lights():
     if opt_obj == 'Lights':
         state.set(rooms_obj_dict[opt_room][opt_obj]['State'])
         if rooms_obj_dict[opt_room]['Lights']['State'] == 'ON':
+            min_intens_btn.grid(row=2, column=0, padx=10)
+            mid_intens_btn.grid(row=2, column=1, padx=10)
+            high_intens_btn.grid(row=2, column=2, padx=10, pady=15)
+
             switch.set('OFF')
+            lights_state.config(bg='#00C59F', fg='#364B44')
+
         else:
+            min_intens_btn.grid_remove()
+            mid_intens_btn.grid_remove()
+            high_intens_btn.grid_remove()
             switch.set('ON')
+            lights_state.config(bg='#C41200', fg='#FFE6D8')
+
         intens.set(rooms_obj_dict[opt_room]['Lights']['Brightness'])
     
     if rooms_obj_dict[opt_room]['Lights']['Brightness'] == 'LOW':
