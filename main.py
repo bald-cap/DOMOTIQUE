@@ -50,16 +50,8 @@ def return_home():
         rad_frame.grid_remove()
     if lights_frame.winfo_viewable():
         lights_frame.grid_remove()
-    if room_form.winfo_viewable():
-        room_form.grid_remove()
-        
-    if mod_return_btn.winfo_viewable():
-        mod_return_btn.grid_remove()
-    if new_room_sub.winfo_viewable():
-        new_room_sub.grid_remove()
 
-    old_room_sub.grid_remove()
-    del_room_form.grid_remove()
+    room_form.grid_remove()
 
     
     if not add_room_btn.winfo_viewable():
@@ -69,10 +61,18 @@ def return_home():
     
     return_btn.grid_remove()
     wel_lab.grid(row=0, column=0, columnspan=3)
+
     mod_rooms_frame.grid(row=1, column=0, columnspan=3)
+
+    mod_return_btn.grid_remove()
+    new_room_sub.grid_remove()
+
+    old_room_sub.grid_remove()
+    del_room_form.grid_remove()
+
     wel_lab_btn.grid(row=2, column=0, columnspan=3)
     if upd_frame.winfo_viewable():
-        upd_frame.grid(row=2, column=0, pady=(0, 15), columnspan=3)
+        upd_frame.grid(row=3, column=0, pady=(0, 15), columnspan=3)
 
 
 def enter_state(event):
@@ -704,18 +704,21 @@ lights_intens = Label(lights_intens_label_frame, textvariable=intens, font=('Seg
 lights_intens.grid(row=0, column=1, padx=(2,10), ipady=1)
 
 ### Checking if Brightness buttons have been clicked
+global min_clicked, mid_clicked, high_clicked
 min_clicked = mid_clicked = high_clicked = False
 
 ## Button for Minimum Brightness
 def min_enter(event):
     global min_clicked
     if not min_clicked:
-        min_intens_btn.config(bg='#1C4B63', fg='#D3D6DB')
+        if mid_clicked or high_clicked:
+            min_intens_btn.config(bg='#1C4B63', fg='#D3D6DB')
 
 def min_leave(event):
     global min_clicked
     if not min_clicked:
-        min_intens_btn.config(bg='#111E26', fg='#D3D6DB')
+        if mid_clicked or high_clicked:
+            min_intens_btn.config(bg='#111E26', fg='#D3D6DB')
 min_intens_btn = Button(intens_frame, text='LOW', bg='#B6A999', fg='#4F4537', font=('Segoe UI sans serif', 13, 'bold'), activeforeground='#D3D6DB', activebackground='#014853', command=lambda: set_intens_low(intens))
 min_intens_btn.bind('<Enter>', min_enter)
 min_intens_btn.bind('<Leave>', min_leave)
