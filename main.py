@@ -356,11 +356,17 @@ def select_state_objs_opt(event):
         if opt_obj.strip() == 'Lights':
             if rad_frame.winfo_viewable:
                 rad_frame.grid_remove()
+                lights_frame.grid(row=1, column=2)
             return_btn.grid(row=0, column=0, columnspan=3)
-            min_intens_btn.grid_remove()
-            mid_intens_btn.grid_remove()
-            high_intens_btn.grid_remove()
-            lights_frame.grid(row=1, column=2)
+            if state.get() == "OFF":
+                min_intens_btn.grid_remove()
+                mid_intens_btn.grid_remove()
+                high_intens_btn.grid_remove()
+            else:
+                min_intens_btn.grid(row=2, column=0, padx=10)
+                mid_intens_btn.grid(row=2, column=1, padx=10)
+                high_intens_btn.grid(row=2, column=2, padx=10, pady=15)
+
             upd_frame.grid(row=2, column=1, pady=(0, 15))
 
             columns, rows = root.grid_size()
@@ -371,8 +377,13 @@ def select_state_objs_opt(event):
             if lights_frame.winfo_viewable():
                 lights_frame.grid_remove()
             return_btn.grid(row=0, column=0, columnspan=3)
-            rad_plus_btn.grid_remove()
-            rad_min_btn.grid_remove()
+
+            if rad_state.get() == "OFF":
+                rad_plus_btn.grid_remove()
+                rad_min_btn.grid_remove()
+            else:
+                rad_min_btn.grid(row=1, column=0, padx=5, pady=(10,0))
+                rad_plus_btn.grid(row=1, column=2, padx=5, pady=(10,0))
             rad_frame.grid(row=1, column=2)
             upd_frame.grid(row=2, column=1, pady=(0, 15))
 
