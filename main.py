@@ -236,10 +236,10 @@ def submit_old_room():
     mod_rooms_frame.grid_remove()
 
 def old_room_sub_enter_state(event):
-    del_room_btn.config(bg='#692602')
+    old_room_sub.config(bg='#692602')
 
 def old_room_sub_leave_state(event):
-    del_room_btn.config(bg='#943603')
+    old_room_sub.config(bg='#943603')
 
 old_room_sub = Button(mod_rooms_frame, font=('Segoe UI sans serif', 13, 'bold'), text='SUBMIT', bg='#943603', fg='#F3EADA', activebackground='#692602', activeforeground='#F3EADA', command=lambda:submit_old_room())
 old_room_sub.bind('<Enter>', old_room_sub_enter_state)
